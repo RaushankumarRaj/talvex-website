@@ -3,6 +3,41 @@
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
 
+  /* ---- header turns solid on scroll ---- */
+  var hdr = $('#hdr');
+  if (hdr) {
+    var onScroll = function () { hdr.classList.toggle('scrolled', window.scrollY > 20); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  /* ---- scroll reveal + number count-up ---- */
+  var countUp = function (el) {
+    var to = +el.getAttribute('data-to'), suf = el.getAttribute('data-suffix') || '', t0 = null;
+    var step = function (t) {
+      if (!t0) t0 = t;
+      var p = Math.min((t - t0) / 1400, 1);
+      el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))) + suf;
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if ('IntersectionObserver' in window && !reduce) {
+    document.documentElement.classList.add('rv');
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('in');
+        $$('[data-to]', e.target).forEach(countUp);
+        io.unobserve(e.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px' });
+    $$('[data-reveal]').forEach(function (el) { io.observe(el); });
+    // never leave content hidden if the observer misses something
+    setTimeout(function () { $$('[data-reveal]').forEach(function (el) { el.classList.add('in'); }); }, 4000);
+  }
+
   /* ---- mobile nav ---- */
   var burger = $('#burger'), menu = $('#menu');
   if (burger && menu) {
@@ -43,9 +78,9 @@
       });
       $('#j-count').textContent = list.length + ' of ' + jobs.length + ' openings';
       jobsEl.innerHTML = list.length ? list.map(function (j) {
-        return '<article class="job"><div><h3>' + esc(j.t) + '</h3><p>' + esc(j.p) + '</p><div class="tags">' +
+        return '<article class="job"><span class="ico"><svg class="i"><use href="#i-briefcase"/></svg></span><div><h3>' + esc(j.t) + '</h3><p>' + esc(j.p) + '</p><div class="tags">' +
           '<span class="tag dept">' + esc(j.d) + '</span><span class="tag">' + esc(j.loc) + '</span><span class="tag">' + esc(j.mode) + '</span><span class="tag">' + esc(j.type) + '</span>' +
-          '</div></div><a class="btn btn-line" href="' + apply + '">Apply</a></article>';
+          '</div></div><a class="btn btn-dark" href="' + apply + '">Apply now <svg class="i"><use href="#i-arrow"/></svg></a></article>';
       }).join('') : '<div class="empty">No openings match your search right now. Try clearing a filter, or submit your profile for future roles.</div>';
     };
     [q, fd, fl, ft].forEach(function (el) { el.addEventListener('input', render); });
