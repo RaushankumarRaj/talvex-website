@@ -33,7 +33,9 @@ The full logo files use live text in the Bricolage Grotesque font. Before you se
 
 - **Job openings:** edit the `jobs` list near the top of `assets/js/main.js`. If you add a department, location or job type, also add it to the matching dropdown in `careers/index.html`.
 - **Phone, email and address:** these appear in the top bar and footer of every page, and on the Contact page.
-- **Social links:** these currently point to the LinkedIn, Instagram, Facebook and YouTube home pages. Replace them with Talvex's own profile URLs in each page's top bar.
+- **Social links:** the footer has no social icons yet. Add them once you have Talvex's own LinkedIn, Instagram, Facebook and YouTube profile URLs.
+- **Photos:** the pages use free Unsplash images. Swap them for photos of your own team and office before launch.
+- **Brand guide:** `/brand-guide/` is not linked from the menu. Share it directly with designers or agencies.
 
 ## Connecting the forms
 
